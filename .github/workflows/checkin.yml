@@ -26,5 +26,6 @@ jobs:
         run: node checkin.js 
         env:
           SENDKEY: ${{ secrets.SENDKEY }}
-          NAME: ${{ secrets.NAME }}
-          COOKIE: ${{ secrets.COOKIE }}
+          HOST: ${{ secrets.HOST }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWD: ${{ secrets.PASSWD }}
