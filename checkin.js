@@ -28,7 +28,7 @@ const ikuuuCheckin = async () => {
     const status = checkinData.ret
     const msg = checkinData.msg
     console.log(status, msg);
-    if (SCKEY) {
+    if (SENDKEY) {
         server(status, msg);
     }
 }
