@@ -17,8 +17,8 @@ const server = (status, msg) => {
         method: 'get',
         url: 'https://sctapi.ftqq.com/'+SENDKEY+'.send',
         params: {
-            title: '状态：${status}',
-            desp: '${msg}'
+            title: '状态：'+status,
+            desp: '# '+msg
         }
     })
 }
