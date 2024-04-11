@@ -5,46 +5,61 @@ const EMAIL = process.env.EMAIL;
 const PASSWD = process.env.PASSWD;
 const SENDKEY = process.env.SENDKEY;
 
-const loginAndGetCookie = async () => {
-    const response = await axios({
-        method: 'post',
-        url: 'https://'+HOST+'/auth/login',
-        data: {
+const login = async () => {
+    try {
+        const response = await axios.post('https://' + HOST + '/auth/login', {
             host: HOST,
-            email: EMAIL,
+            email:EMAIL,
             passwd: PASSWD
-        }
-    });
-    const cookie = response.headers['set-cookie']; // 获取响应中的cookie
-    axios.defaults.headers.common.cookie = cookie; // 将获取到的cookie设置为axios的默认header之一
+        });
+        return response.headers['set-cookie'];
+    } catch (error) {
+        console.error("Login failed:", error.response.data);
+        throw new Error("Login failed");
+    }
 };
 
-const checkIn = async () => {
-    return axios({
-        method: 'post',
-        url: 'https://'+HOST+'/user/checkin'
-    })
-}
+const checkIn = async (cookie) => {
+    try {
+        const response = await axios.post('https://' + HOST + '/user/checkin', {}, {
+            headers: {
+                Cookie: cookie
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Check-in failed:", error.response.data);
+        throw new Error("Check-in failed");
+    }
+};
 
-const server = (status, msg) => {
-    return axios({
-        method: 'get',
-        url: 'https://sctapi.ftqq.com/'+SENDKEY+'.send',
-        params: {
-            title: '状态：'+status,
-            desp: '# '+msg
+const server = async (status, msg) => {
+    if (SENDKEY) {
+        try {
+            await axios.get('https://sctapi.ftqq.com/' + SENDKEY + '.send', {
+                params: {
+                    title: '状态：' + status,
+                    desp: '# ' + msg
+                }
+            });
+        } catch (error) {
+            console.error("Failed to send notification:", error);
         }
-    })
-}
+    }
+};
 
 const ikuuuCheckin = async () => {
-    loginAndGetCookie();
-    const checkinData = (await checkIn())?.data;
-    const status = checkinData.ret
-    const msg = checkinData.msg
-    console.log(status, msg);
-    if (SENDKEY) {
-        server(status, msg);
+    try {
+        const cookie = await login();
+        console.log("Login successful. Cookie:", cookie);
+        axios.defaults.headers.common.cookie = cookie;
+        const checkinData = await checkIn(cookie);
+        const status = checkinData.ret;
+        const msg = checkinData.msg;
+        console.log("Check-in status:", status, msg);
+        await server(status, msg);
+    } catch (error) {
+        console.error("Error occurred:", error.message);
     }
 }
 
