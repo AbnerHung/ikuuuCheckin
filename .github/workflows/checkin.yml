@@ -1,7 +1,7 @@
 name:  ikuuuCheckin
 on:
   push:
-    branches: [ dev ]
+    branches: [ main ]
     paths-ignore: 
       - 'README.md'
   schedule:
