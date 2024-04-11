@@ -15,9 +15,10 @@ const checkIn = async () => {
 const server = (status, msg) => {
     return axios({
         method: 'get',
-        url: `https://sctapi.ftqq.com/${SENDKEY}.send`,
+        url: 'https://sctapi.ftqq.com/${SENDKEY}.send',
         params: {
-            title: `状态：${status}；${msg}`
+            title: '状态：${status}',
+            desp: '${msg}'
         }
     })
 }
